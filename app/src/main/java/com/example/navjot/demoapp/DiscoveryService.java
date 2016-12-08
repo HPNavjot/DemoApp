@@ -47,7 +47,6 @@ public class DiscoveryService extends Service {
                 }
                 else if (state == BluetoothAdapter.STATE_OFF){
                     Toast.makeText(getApplicationContext(), "BT OFF", Toast.LENGTH_SHORT).show();
-                    //stopScan();
                 }
             }
         }
