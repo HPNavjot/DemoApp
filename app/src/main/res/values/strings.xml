@@ -20,4 +20,6 @@
     </string>
     <string name="no_scan_without_wifi">Oops cant work without Wifi</string>
     <string name="title_activity_detail">DetailActivity</string>
+    <string name="pressed_back_btn">User pressed back button</string>
+    <string name="login_successful">user login was successful</string>
 </resources>
