@@ -74,7 +74,7 @@ public class ScanActivity extends Activity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 //Toast.makeText(getApplicationContext(), "selected position: "+position+", item:"+mValues[position], Toast.LENGTH_SHORT).show();
-                Log.d(LOG_TAG, "selected position: "+position+", item:"+mValues[position]);
+                Log.d(LOG_TAG, "onCreate: selected position: "+position+", item:"+mValues[position]);
 
                 Intent intent = new Intent();
                 intent.setClass(mContext, DetailActivity.class);
@@ -84,50 +84,72 @@ public class ScanActivity extends Activity {
             }
         });
     }
+
     private void updateList() {
         final ArrayList<String> list = new ArrayList<String>();
-        Log.d(LOG_TAG, "in updateList()");
+        Log.d(LOG_TAG, "updateList()");
+
+        if(mDialog != null && mDialog.isShowing()) {
+            Log.d(LOG_TAG, "updateList: dissmiss dialog");
+            mDialog.dismiss();
+        }
+
         for (String mValue : mValues) {
             list.add(mValue);
         }
+
         final StableArrayAdapter adapter = new StableArrayAdapter(this,
                 android.R.layout.simple_list_item_1, list);
         mScanList.setAdapter(adapter);
     }
+
     @Override
     protected void onStart() {
         super.onStart();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         mWifiManager =  (WifiManager) getSystemService(Context.WIFI_SERVICE);
         IntentFilter filter = new IntentFilter();
         filter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
-        Log.d(LOG_TAG, "registerReceiver");
+        Log.d(LOG_TAG, "onResume: registerReceiver");
         mReciever = new WifiReceiver();
         registerReceiver(mReciever, filter);
         enableWifi();
     }
 
     private void enableWifi() {
-        if (!mWifiManager.isWifiEnabled()){
-            AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-            builder.setTitle(R.string.enable_wifi_title);
-            builder.setCancelable(false);
-            builder.setPositiveButton(R.string.enable_positive_text, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    mWifiManager.setWifiEnabled(true);
-                    Log.d(LOG_TAG, "set true, calling updateList");
-                    //updateList();
-                }
-            });
-            builder.setNegativeButton(R.string.enable_negative_text, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    Toast t1 = Toast.makeText(mContext, R.string.no_scan_without_wifi, Toast.LENGTH_LONG);
-                    t1.show();
-                    finish();
-                }
-            });
-            mDialog = builder.create();
+        Log.d(LOG_TAG, "enableWifi");
+        if (!mWifiManager.isWifiEnabled() ){
+            Log.d(LOG_TAG, "enableWifi: building  alert");
+            if (mDialog == null) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+
+                builder.setTitle(R.string.enable_wifi_title);
+                builder.setCancelable(false);
+                builder.setPositiveButton(R.string.enable_positive_text,
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                mWifiManager.setWifiEnabled(true);
+                                Log.d(LOG_TAG, "enableWifi: set true, calling updateList");
+                                //updateList();
+                            }
+                        });
+                builder.setNegativeButton(R.string.enable_negative_text,
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Toast t1 = Toast.makeText(mContext, R.string.no_scan_without_wifi,
+                                        Toast.LENGTH_LONG);
+                                t1.show();
+                                finish();
+                            }
+                        });
+                mDialog = builder.create();
+            }
             mScanList.setAdapter(null);
             mDialog.show();
         }
@@ -137,14 +159,15 @@ public class ScanActivity extends Activity {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (WifiManager.WIFI_STATE_CHANGED_ACTION == intent.getAction()) {
-                Log.d(LOG_TAG, "something changed in wifi");
+                Log.d(LOG_TAG, "WifiReceiver: something changed in wifi");
                 if (mWifiManager.getWifiState() ==  WifiManager.WIFI_STATE_DISABLED) {
                     enableWifi();
                 } else if (mWifiManager.getWifiState() == WifiManager.WIFI_STATE_ENABLED) {
                     if (mDialog != null && mDialog.isShowing()) {
+                        Log.d(LOG_TAG, "WifiReceiver: cancel dialog");
                         mDialog.cancel();
                     }
-                    Log.d(LOG_TAG, "calling updateList");
+                    Log.d(LOG_TAG, "WifiReceiver: calling updateList");
                     updateList();
                 }
             }
@@ -152,11 +175,22 @@ public class ScanActivity extends Activity {
     }
 
     @Override
-    protected void onDestroy() {
+    protected void onPause() {
+        Log.d(LOG_TAG, "onPause()");
         if (mReciever != null) {
             unregisterReceiver(mReciever);
-            Log.d(LOG_TAG, "unregisterReceiver");
+            Log.d(LOG_TAG, "onPause: unregisterReceiver");
         }
+        if (mDialog != null) {
+            Log.d(LOG_TAG, "onPause: dismiss dialog");
+            mDialog.dismiss();
+        }
+        super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        Log.d(LOG_TAG, "onDestroy()");
         super.onDestroy();
     }
 }

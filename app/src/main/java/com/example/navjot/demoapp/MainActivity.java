@@ -32,7 +32,6 @@ public class MainActivity extends AppCompatActivity {
         mBtnLaunchService.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getApplicationContext(),"Clicked on launch service btn", Toast.LENGTH_SHORT).show();
                 Intent myService = new Intent(getApplicationContext(), DiscoveryService.class);
                 startService(myService);
 
@@ -43,7 +42,6 @@ public class MainActivity extends AppCompatActivity {
         mBtnLaunchResultActivity.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getApplicationContext(),"Clicked on launch Activity for result", Toast.LENGTH_SHORT).show();
                 Intent myResultActivity = new Intent(getApplicationContext(), LoginActivity.class);
                 startActivityForResult(myResultActivity,RESULT_ACT_CODE);
             }
@@ -53,11 +51,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == RESULT_ACT_CODE){
+        if (requestCode == RESULT_ACT_CODE) {
             if (resultCode == Activity.RESULT_CANCELED){
-                Toast.makeText(getApplicationContext(), "user pressed back button", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), R.string.pressed_back_btn, Toast.LENGTH_SHORT).show();
             } else if ( resultCode == Activity.RESULT_OK) {
-                Toast.makeText(getApplicationContext(), "user login was successful", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), R.string.login_successful, Toast.LENGTH_SHORT).show();
             }
         }
     }
