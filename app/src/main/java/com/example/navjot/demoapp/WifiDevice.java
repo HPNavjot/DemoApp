@@ -13,7 +13,6 @@ public class WifiDevice {
         mBundle = new Bundle();
     }
 
-    
     public String getSsid() {
         return mBundle.getString(EXTRA_SSID);
     }
@@ -25,8 +24,4 @@ public class WifiDevice {
     public long getTxpower() {
         return mBundle.getLong(EXTRA_TX_POWER);
     }
-
-
-
-
 }
