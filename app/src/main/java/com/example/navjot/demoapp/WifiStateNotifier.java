@@ -76,9 +76,9 @@ class WifiStateNotifier {
     }
 
     interface WifiStateListener {
-        void onDisconnected();
+        void onDisabled();
 
-        void onConnected();
+        void onEnabled();
 
         void onDeclineEnable();
 
@@ -90,9 +90,9 @@ class WifiStateNotifier {
         public void onReceive(Context context, Intent intent) {
             if (WifiManager.WIFI_STATE_CHANGED_ACTION.equals(intent.getAction())) {
                 if (mWifiManager.getWifiState() == WifiManager.WIFI_STATE_DISABLED) {
-                    mStateListener.onDisconnected();
+                    mStateListener.onDisabled();
                 } else if (mWifiManager.getWifiState() == WifiManager.WIFI_STATE_ENABLED) {
-                    mStateListener.onConnected();
+                    mStateListener.onEnabled();
                 }
             }
         }

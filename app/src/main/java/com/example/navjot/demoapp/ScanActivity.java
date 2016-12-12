@@ -82,14 +82,14 @@ public class ScanActivity extends Activity implements WifiStateNotifier.WifiStat
     }
 
     @Override
-    public void onDisconnected() {
-        Log.d(LOG_TAG, "onDisconnected()");
+    public void onDisabled() {
+        Log.d(LOG_TAG, "onDisabled()");
         mScanList.setAdapter(null);
         mWifiStateManager.enableWifi();
     }
 
     @Override
-    public void onConnected() {
+    public void onEnabled() {
         // Update the scan list
         updateList();
     }
