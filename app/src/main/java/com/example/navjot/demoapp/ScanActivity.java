@@ -57,8 +57,7 @@ public class ScanActivity extends Activity implements WifiStateNotifier.WifiStat
         Log.d(LOG_TAG, "updateList()");
         Collections.addAll(list, mValues);
 
-        final StableArrayAdapter adapter = new StableArrayAdapter(this,
-                list);
+        final StableArrayAdapter adapter = new StableArrayAdapter(this, list);
         mScanList.setAdapter(adapter);
     }
 

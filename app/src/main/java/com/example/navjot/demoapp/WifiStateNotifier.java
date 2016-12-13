@@ -31,8 +31,8 @@ class WifiStateNotifier {
             mWifiManager = (WifiManager) mContext.getSystemService(Context.WIFI_SERVICE);
             IntentFilter filter = new IntentFilter();
             filter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
-            Log.d(LOG_TAG, "onResume: registerReceiver");
             mReceiver = new WifiReceiver();
+            Log.d(LOG_TAG, "startWifiMonitor: registerReceiver");
             mContext.registerReceiver(mReceiver, filter);
         }
         enableWifi();
@@ -42,13 +42,14 @@ class WifiStateNotifier {
         Log.d(LOG_TAG, "stopWifiMonitor()");
         if (mReceiver != null) {
             mContext.unregisterReceiver(mReceiver);
+            mReceiver = null;
+            Log.d(LOG_TAG, "stopWifiMonitor() unregistered");
         }
     }
 
     void enableWifi() {
         Log.d(LOG_TAG, "enableWifi");
         if (!mWifiManager.isWifiEnabled()) {
-            Log.d(LOG_TAG, "enableWifi: building alert");
             if (mDialog == null) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
 
@@ -71,6 +72,7 @@ class WifiStateNotifier {
                         });
                 mDialog = builder.create();
             }
+            Log.d(LOG_TAG, "enableWifi: enable wifi alert show");
             mDialog.show();
         }
     }
