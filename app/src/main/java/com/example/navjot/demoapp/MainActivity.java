@@ -13,7 +13,7 @@ import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String TAG="MainActivity";
+    private static final String TAG = "MainActivity";
     final int RESULT_ACT_CODE = 1;
     Button mBtnLaunchActivity, mBtnLaunchService, mBtnLaunchResultActivity;
     ProgressDialog mProgressDialog;
