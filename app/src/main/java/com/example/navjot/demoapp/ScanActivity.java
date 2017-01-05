@@ -85,12 +85,12 @@ public class ScanActivity extends Activity implements WifiStateNotifier.WifiStat
     protected void onPause() {
         Log.d(LOG_TAG, "onPause()");
         mWifiStateManager.stopWifiMonitor();
-        mDiscovery.close();
         super.onPause();
     }
 
     @Override
     protected void onDestroy() {
+        mDiscovery.close();
         Log.d(LOG_TAG, "onDestroy()");
         super.onDestroy();
     }
