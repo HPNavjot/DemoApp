@@ -22,4 +22,6 @@
     <string name="title_activity_detail">DetailActivity</string>
     <string name="pressed_back_btn">User pressed back button</string>
     <string name="login_successful">user login was successful</string>
+    <string name="wifi_disabled">Wi-Fi is disabled</string>
+    <string name="wifi_enabled">Wi-Fi is enabled</string>
 </resources>

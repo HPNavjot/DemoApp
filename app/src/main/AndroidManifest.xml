@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.navjot.demoapp">
+          package="com.example.navjot.demoapp">
 
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
 
     <!-- To auto-complete the email text field in the login form with the user's emails -->
-    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
-    <uses-permission android:name="android.permission.READ_PROFILE" />
-    <uses-permission android:name="android.permission.READ_CONTACTS" />
-    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
+    <uses-permission android:name="android.permission.READ_PROFILE"/>
+    <uses-permission android:name="android.permission.READ_CONTACTS"/>
+    <uses-permission android:name="android.permission.BLUETOOTH"/>
 
     <application
         android:allowBackup="true"
@@ -20,36 +20,45 @@
         android:theme="@style/AppTheme">
         <activity android:name=".MainActivity">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.MAIN"/>
 
-                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
 
         <service
             android:name=".MyService"
             android:enabled="false"
-            android:exported="false" />
+            android:exported="false"/>
 
         <activity
             android:name=".ScanActivity"
-            android:exported="false" />
+            android:exported="false"/>
 
         <service
             android:name=".DiscoveryService"
             android:enabled="true"
-            android:exported="true" />
+            android:exported="true"/>
 
         <activity
             android:name=".LoginActivity"
-            android:label="@string/title_activity_login" />
+            android:label="@string/title_activity_login"/>
         <activity
             android:name=".Sample.DetailActivity"
             android:label="@string/title_activity_detail"
-            android:theme="@style/AppTheme.NoActionBar"></activity><!-- ATTENTION: This was auto-generated to add Google Play services to your project for
-     App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information. -->
-        <meta-data android:name="com.google.android.gms.version"
-                   android:value="@integer/google_play_services_version"/>
+            android:theme="@style/AppTheme.NoActionBar"/>
+        <!--
+ ATTENTION: This was auto-generated to add Google Play services to your project for
+     App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information.
+        -->
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version"/>
+        <service
+            android:name=".DiscoveryService"
+            android:enabled="true"
+            android:exported="false">
+        </service>
     </application>
 
 </manifest>
