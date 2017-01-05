@@ -10,7 +10,7 @@ import android.support.v7.app.AlertDialog;
 import android.util.Log;
 
 
-class WifiStateNotifier {
+public class WifiStateNotifier {
 
     private static final String LOG_TAG = "WifiStateNotifier";
     private final WifiStateListener mStateListener;
@@ -19,16 +19,16 @@ class WifiStateNotifier {
     private WifiReceiver mReceiver;
     private AlertDialog mDialog;
 
-    WifiStateNotifier(Context scanActivity, WifiStateListener listener) {
+    public WifiStateNotifier(Context context, WifiStateListener listener) {
         Log.d(LOG_TAG, "WifiStateNotifier constructor");
         mStateListener = listener;
-        mContext = scanActivity;
+        mContext = context;
+        mWifiManager = (WifiManager) mContext.getSystemService(Context.WIFI_SERVICE);
     }
 
     void startWifiMonitor() {
         Log.d(LOG_TAG, "startWifiMonitor()");
         if (mReceiver == null) {
-            mWifiManager = (WifiManager) mContext.getSystemService(Context.WIFI_SERVICE);
             IntentFilter filter = new IntentFilter();
             filter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
             mReceiver = new WifiReceiver();
@@ -45,6 +45,10 @@ class WifiStateNotifier {
             mReceiver = null;
             Log.d(LOG_TAG, "stopWifiMonitor() unregistered");
         }
+    }
+
+    public boolean isEnabled() {
+        return mWifiManager.isWifiEnabled();
     }
 
     void enableWifi() {
@@ -72,7 +76,7 @@ class WifiStateNotifier {
                         });
                 mDialog = builder.create();
             }
-            Log.d(LOG_TAG, "enableWifi: enable wifi alert show");
+            Log.d(LOG_TAG, "enableWifi: show wifi alert dialog");
             mDialog.show();
         }
     }
@@ -94,6 +98,9 @@ class WifiStateNotifier {
                 if (mWifiManager.getWifiState() == WifiManager.WIFI_STATE_DISABLED) {
                     mStateListener.onDisabled();
                 } else if (mWifiManager.getWifiState() == WifiManager.WIFI_STATE_ENABLED) {
+                    if (mDialog != null && mDialog.isShowing()) {
+                        mDialog.dismiss();
+                    }
                     mStateListener.onEnabled();
                 }
             }

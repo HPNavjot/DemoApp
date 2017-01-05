@@ -24,12 +24,15 @@ public class ScanActivity extends Activity implements WifiStateNotifier.WifiStat
     private String[] mValues;
     private ListView mScanList;
     private WifiStateNotifier mWifiStateManager;
+    private Discovery mDiscovery;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my);
         mWifiStateManager = new WifiStateNotifier(this, this);
+        mDiscovery = new Discovery(this);
+
         mScanList = (ListView) findViewById(R.id.listView);
         mValues = new String[]{"Android", "iPhone", "WindowsMobile",
                 "Blackberry", "WebOS", "Ubuntu", "Windows7", "Max OS X",
@@ -64,6 +67,17 @@ public class ScanActivity extends Activity implements WifiStateNotifier.WifiStat
     @Override
     protected void onResume() {
         mWifiStateManager.startWifiMonitor();
+        mDiscovery.startDiscovery(new Discovery.DiscoveryListener() {
+            @Override
+            public void onScanStart() {
+                Log.d(LOG_TAG, "onScanStart");
+            }
+
+            @Override
+            public void onScanComplete() {
+                Log.d(LOG_TAG, "onScanComplete");
+            }
+        });
         super.onResume();
     }
 
@@ -71,6 +85,7 @@ public class ScanActivity extends Activity implements WifiStateNotifier.WifiStat
     protected void onPause() {
         Log.d(LOG_TAG, "onPause()");
         mWifiStateManager.stopWifiMonitor();
+        mDiscovery.close();
         super.onPause();
     }
 
@@ -95,8 +110,7 @@ public class ScanActivity extends Activity implements WifiStateNotifier.WifiStat
 
     @Override
     public void onDeclineEnable() {
-        Toast t1 = Toast.makeText(mContext, R.string.no_scan_without_wifi,
-                Toast.LENGTH_LONG);
+        Toast t1 = Toast.makeText(mContext, R.string.no_scan_without_wifi, Toast.LENGTH_LONG);
         t1.show();
         finish();
     }
@@ -110,8 +124,7 @@ public class ScanActivity extends Activity implements WifiStateNotifier.WifiStat
 
         final HashMap<String, Integer> mIdMap = new HashMap<>();
 
-        StableArrayAdapter(Context context,
-                List<String> objects) {
+        StableArrayAdapter(Context context, List<String> objects) {
             super(context, android.R.layout.simple_list_item_1, objects);
             for (int i = 0; i < objects.size(); ++i) {
                 mIdMap.put(objects.get(i), i);
