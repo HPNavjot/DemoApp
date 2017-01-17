@@ -5,14 +5,14 @@ import android.os.Bundle;
 public class WifiDevice {
     private Bundle mBundle;
     public static final String EXTRA_SSID = "ssid";
-    public static final String EXTRA_RSSI = "rssi";
-    public static final String EXTRA_CAPS = "capabilities";
-    public static final String EXTRA_BSSID = "bssid";
-    public static final String EXTRA_TIMESTAMP = "timestamp";
-    public static final String EXTRA_FRIENDLY_NAME = "friendlyName";
-    public static final String EXTRA_VENUE_NAME = "venueName";
+    private static final String EXTRA_RSSI = "rssi";
+    private static final String EXTRA_CAPS = "capabilities";
+    private static final String EXTRA_BSSID = "bssid";
+    private static final String EXTRA_TIMESTAMP = "timestamp";
+    private static final String EXTRA_FRIENDLY_NAME = "friendlyName";
+    private static final String EXTRA_VENUE_NAME = "venueName";
 
-    WifiDevice() {
+    private WifiDevice() {
         mBundle = new Bundle();
     }
 

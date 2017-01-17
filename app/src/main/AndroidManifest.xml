@@ -48,7 +48,7 @@
             android:name=".LoginActivity"
             android:label="@string/title_activity_login"/>
         <activity
-            android:name=".Sample$DetailActivity"
+            android:name=".Sample.DetailActivity"
             android:label="@string/title_activity_detail"
             android:theme="@style/AppTheme.NoActionBar"/>
         <!--

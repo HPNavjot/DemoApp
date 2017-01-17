@@ -14,9 +14,11 @@ import android.widget.Toast;
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
-    final int RESULT_ACT_CODE = 1;
-    Button mBtnLaunchActivity, mBtnLaunchService, mBtnLaunchResultActivity;
-    ProgressDialog mProgressDialog;
+    private final int RESULT_ACT_CODE = 1;
+    private Button mBtnLaunchActivity;
+    private Button mBtnLaunchService;
+    private Button mBtnLaunchResultActivity;
+    private ProgressDialog mProgressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,13 +86,12 @@ public class MainActivity extends AppCompatActivity {
                 if (mProgressDialog.getMax() != mProgressDialog.getProgress()){
                     Toast.makeText(getApplicationContext(), "Cancelled the progressDialog", Toast.LENGTH_SHORT).show();
                     mTask.cancel(true);
-                    return;
                 }
             }
         });
     }
 
-    class MyAsyncTask extends AsyncTask<Integer,Integer,Integer>{
+    private class MyAsyncTask extends AsyncTask<Integer,Integer,Integer>{
 
         @Override
         protected Integer doInBackground(Integer ...params) {

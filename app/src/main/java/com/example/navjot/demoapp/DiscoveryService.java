@@ -1,12 +1,10 @@
 package com.example.navjot.demoapp;
 
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
-import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
-import android.os.IBinder;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Looper;
 import android.util.Log;
 
@@ -16,21 +14,19 @@ import java.util.Timer;
 
 public class DiscoveryService extends Service {
 
+    private final int RESCAN_AFTER = 4000;
     private final String TAG = "DiscoveryService";
-    Boolean isScanning;
-    Binder mBinder = new Binder();
-    Runnable mDiscoveryTask;
-    WifiManager mWifiManager;
-    List<WifiDevice> mScanResults;
-    Discovery.DiscoveryListener mListener;
-    Timer mTimer;
-    Handler mHandler;
-    final int RESCAN_AFTER = 4000;
-    final int FIRST_SCAN_OFFSET = 0;
+    private Binder mBinder = new Binder();
+    private Runnable mDiscoveryTask;
+    private WifiManager mWifiManager;
+    private List<WifiDevice> mScanResults;
+    private Discovery.DiscoveryListener mListener;
+    private Timer mTimer;
+    private Handler mHandler;
+
     @Override
     public void onCreate() {
         Log.d(TAG, "onCreate()");
-        isScanning = false;
         mScanResults = new ArrayList<>();
         mTimer = new Timer();
         mHandler = new Handler(Looper.getMainLooper());
@@ -61,7 +57,6 @@ public class DiscoveryService extends Service {
     public class Binder extends android.os.Binder {
         public void startDiscovery(Discovery.DiscoveryListener listener, WifiManager manager) {
             mWifiManager = manager;
-            isScanning = true;
             mListener = listener;
             mListener.onScanStart();
 //            mTimer.schedule(mDiscoveryTask, FIRST_SCAN_OFFSET, RESCAN_AFTER);
@@ -71,7 +66,6 @@ public class DiscoveryService extends Service {
 
         public void stopDiscovery(Discovery.DiscoveryListener listener) {
             Log.d(TAG, "Binder: stopDiscovery");
-            isScanning = false;
             mHandler.removeCallbacks(mDiscoveryTask);
             listener.onScanStopped();
         }

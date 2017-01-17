@@ -11,7 +11,7 @@ import java.io.Closeable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Discovery implements Closeable {
+class Discovery implements Closeable {
     private final String TAG = "Discovery";
     private final ServiceConnection mServiceConnection;
     private final List<Runnable> mDiscoveryActions;

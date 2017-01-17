@@ -26,9 +26,9 @@ import java.util.List;
 
 public class ScanActivity extends Activity implements WifiStateNotifier.WifiStateListener {
     private static final String LOG_TAG = "ScanActivity";
-    final int REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS = 1;
+    private final int REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS = 1;
     private final Context mContext = this;
-    StableArrayAdapter mAdapter;
+    private StableArrayAdapter mAdapter;
     private ListView mScanList;
     private WifiStateNotifier mWifiStateManager;
     private Discovery mDiscovery;
