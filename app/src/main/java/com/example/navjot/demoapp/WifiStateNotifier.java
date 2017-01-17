@@ -120,7 +120,10 @@ public class WifiStateNotifier {
                 }
             } else if (WifiManager.SCAN_RESULTS_AVAILABLE_ACTION.equals(intent.getAction())) {
                 List<ScanResult> list = mWifiManager.getScanResults();
-                if ((!list.isEmpty()) && !mScanResults.equals(list)) {
+                if (mScanResults == null) {
+                    mScanResults = list;
+                    mStateListener.onScanResultAvailable(mScanResults);
+                } else if (!list.isEmpty() && !mScanResults.equals(list)) {
                     mScanResults = list;
                     mStateListener.onScanResultAvailable(mScanResults);
                 }
