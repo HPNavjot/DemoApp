@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.net.wifi.ScanResult;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -20,22 +21,21 @@ import com.example.navjot.demoapp.Discovery.DiscoveryListener;
 import com.example.navjot.demoapp.Sample.DetailActivity;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
 public class ScanActivity extends Activity implements WifiStateNotifier.WifiStateListener {
     private static final String LOG_TAG = "ScanActivity";
+    final int REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS = 1;
     private final Context mContext = this;
-    private String[] mValues;
+    StableArrayAdapter mAdapter;
     private ListView mScanList;
     private WifiStateNotifier mWifiStateManager;
     private Discovery mDiscovery;
     private DiscoveryEvents mEvents;
-    final int REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS = 1;
     private List<WifiDevice> mWifiDevices;
     private List<String> mWifiDeviceNames;
-    StableArrayAdapter mAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,11 +44,6 @@ public class ScanActivity extends Activity implements WifiStateNotifier.WifiStat
         mDiscovery = new Discovery(this);
         mEvents = new DiscoveryEvents();
         mScanList = (ListView) findViewById(R.id.listView);
-        mValues = new String[]{"Android", "iPhone", "WindowsMobile",
-                "Blackberry", "WebOS", "Ubuntu", "Windows7", "Max OS X",
-                "Linux", "OS/2", "Ubuntu", "Windows7", "Max OS X", "Linux",
-                "OS/2", "Ubuntu", "Windows7", "Max OS X", "Linux", "OS/2",
-                "Android", "iPhone", "WindowsMobile"};
         mWifiDevices = new ArrayList<>();
         mWifiDeviceNames = new ArrayList<>();
         updateList();
@@ -128,27 +123,70 @@ public class ScanActivity extends Activity implements WifiStateNotifier.WifiStat
     @Override
     public void onScanResultAvailable(List<ScanResult> scanResults) {
         Log.d(LOG_TAG, "got the result: "+scanResults.size());
-
-        for(ScanResult result : scanResults) {
-            WifiDevice.Builder builder = new WifiDevice.Builder();
-            builder.setSsid(result.SSID);
-            builder.setBssid(result.BSSID);
-            builder.setCapabilities(result.capabilities);
-            builder.setTimestamp(result.timestamp);
-            builder.setRssi(result.level);
-            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
-                builder.setFriendlyName(result.operatorFriendlyName);
-                builder.setVenueName(result.venueName);
+        if (mWifiStateManager.isEnabled()) {
+            for (ScanResult result : scanResults) {
+                WifiDevice.Builder builder = new WifiDevice.Builder();
+                builder.setSsid(result.SSID);
+                builder.setBssid(result.BSSID);
+                builder.setCapabilities(result.capabilities);
+                builder.setTimestamp(result.timestamp);
+                builder.setRssi(result.level);
+                if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
+                    builder.setFriendlyName(result.operatorFriendlyName);
+                    builder.setVenueName(result.venueName);
+                }
+                WifiDevice device = builder.build();
+                mWifiDevices.add(device);
+                mWifiDeviceNames.add(device.toString());
             }
-            WifiDevice device = builder.build();
-            mWifiDevices.add(device);
-            mWifiDeviceNames.add(device.toString());
+            if (mAdapter != null) {
+                mAdapter = new StableArrayAdapter(this, mWifiDeviceNames);
+            }
+            mScanList.setAdapter(mAdapter);
+            mAdapter.notifyDataSetChanged();
         }
-        if (mAdapter != null) {
-            mAdapter = new StableArrayAdapter(this, mWifiDeviceNames);
+    }
+
+    @TargetApi(23)
+    private boolean checkPermission() {
+
+        List<String> permissionsList = new ArrayList<>();
+
+        if (this.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            permissionsList.add(Manifest.permission.ACCESS_FINE_LOCATION);
         }
-        mScanList.setAdapter(mAdapter);
-        mAdapter.notifyDataSetChanged();
+        if (this.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            permissionsList.add(Manifest.permission.ACCESS_COARSE_LOCATION);
+        }
+
+        if (permissionsList.size() > 0) {
+            this.requestPermissions(permissionsList.toArray(new String[permissionsList.size()]), REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS);
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+            @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS:
+                for(int grant: grantResults)
+                    Log.d(LOG_TAG, "granted: "+permissions[grant]);
+                if (permissions.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED ||
+                        (permissions.length == 2 && grantResults[0] == PackageManager.PERMISSION_GRANTED &&
+                                grantResults[1] == PackageManager.PERMISSION_GRANTED)){
+                    mWifiStateManager.startWifiMonitor();
+                    mDiscovery.startDiscovery(mEvents, mWifiStateManager.getWifiManager());
+                    mWifiStateManager.startScan();
+                }
+                else {
+                    // Permission Denied
+                    Toast.makeText(mContext, "Permission denied", Toast.LENGTH_LONG).show();
+                }
+                break;
+        }
     }
 
     private class StableArrayAdapter extends ArrayAdapter<String> {
@@ -174,7 +212,6 @@ public class ScanActivity extends Activity implements WifiStateNotifier.WifiStat
         }
     }
 
-
     class DiscoveryEvents implements DiscoveryListener {
 
         @Override
@@ -185,48 +222,6 @@ public class ScanActivity extends Activity implements WifiStateNotifier.WifiStat
         @Override
         public void onScanStopped() {
             Toast.makeText(mContext, "Scan stopped", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    @TargetApi(23)
-    private boolean checkPermission() {
-
-        List<String> permissionsList = new ArrayList<>();
-
-        if (this.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            permissionsList.add(Manifest.permission.ACCESS_FINE_LOCATION);
-        }
-        if (this.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            permissionsList.add(Manifest.permission.ACCESS_COARSE_LOCATION);
-        }
-
-        if (permissionsList.size() > 0) {
-            this.requestPermissions(permissionsList.toArray(new String[permissionsList.size()]), REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS);
-            return false;
-        }
-
-        return true;
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            int[] grantResults) {
-        switch (requestCode) {
-            case REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS:
-                for(int grant: grantResults)
-                    Log.d(LOG_TAG, "granted: "+permissions[grant]);
-                if (permissions.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED ||
-                        (permissions.length == 2 && grantResults[0] == PackageManager.PERMISSION_GRANTED &&
-                                grantResults[1] == PackageManager.PERMISSION_GRANTED)){
-                    mWifiStateManager.startWifiMonitor();
-                    mDiscovery.startDiscovery(mEvents, mWifiStateManager.getWifiManager());
-                    mWifiStateManager.startScan();
-                }
-                else {
-                    // Permission Denied
-                    Toast.makeText(mContext, "Permission denied", Toast.LENGTH_LONG).show();
-                }
-                break;
         }
     }
 }

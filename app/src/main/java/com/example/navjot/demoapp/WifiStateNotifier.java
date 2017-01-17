@@ -10,7 +10,6 @@ import android.net.wifi.WifiManager;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -19,10 +18,10 @@ public class WifiStateNotifier {
     private static final String LOG_TAG = "WifiStateNotifier";
     private final WifiStateListener mStateListener;
     private final Context mContext;
-    private WifiManager mWifiManager;
+    private final WifiManager mWifiManager;
+    private List<ScanResult> mScanResults;
     private WifiReceiver mReceiver;
     private AlertDialog mDialog;
-    List<ScanResult> mScanResults;
 
     public WifiStateNotifier(Context context, WifiStateListener listener) {
         Log.d(LOG_TAG, "WifiStateNotifier constructor");
@@ -126,6 +125,8 @@ public class WifiStateNotifier {
                 } else if (!list.isEmpty() && !mScanResults.equals(list)) {
                     mScanResults = list;
                     mStateListener.onScanResultAvailable(mScanResults);
+                } else {
+                    Log.d(LOG_TAG, "no update, same result");
                 }
             }
         }
