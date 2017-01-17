@@ -3,6 +3,7 @@ package com.example.navjot.demoapp;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.net.wifi.WifiManager;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -25,12 +26,22 @@ public class Discovery implements Closeable {
         mContext.bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
     }
 
-    void startDiscovery(final DiscoveryListener listener) throws NullPointerException {
+    void startDiscovery(final DiscoveryListener listener, final WifiManager manager) throws NullPointerException {
         Log.d(TAG, "startDiscovery");
         setDiscoveryAction(new Runnable() {
             @Override
             public void run() {
-                mService.startDiscovery(listener);
+                mService.startDiscovery(listener, manager);
+            }
+        });
+    }
+
+    void stopDiscovery(final DiscoveryListener listener) throws NullPointerException {
+        Log.d(TAG, "stopDiscovery");
+        setDiscoveryAction(new Runnable() {
+            @Override
+            public void run() {
+                mService.stopDiscovery(listener);
             }
         });
     }
@@ -52,7 +63,7 @@ public class Discovery implements Closeable {
     interface DiscoveryListener {
         void onScanStart();
 
-        void onScanComplete();
+        void onScanStopped();
     }
 
     private class ServiceConnection implements android.content.ServiceConnection {
