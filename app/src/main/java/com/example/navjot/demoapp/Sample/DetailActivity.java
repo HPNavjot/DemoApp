@@ -2,6 +2,7 @@ package com.example.navjot.demoapp.Sample;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -11,6 +12,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.example.navjot.demoapp.R;
+import com.example.navjot.demoapp.WifiDevice;
 import com.example.navjot.demoapp.WifiStateNotifier;
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
@@ -26,6 +28,7 @@ public class DetailActivity extends AppCompatActivity {
      * See https://g.co/AppIndexing/AndroidStudio for more information.
      */
     private GoogleApiClient mClient;
+    private Bundle mBundle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,7 +37,9 @@ public class DetailActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         Intent intent = this.getIntent();
-        this.setTitle(intent.getStringExtra("EXTRA_NAME"));
+        mBundle = intent.getExtras();
+        //this.setTitle(intent.getStringExtra("EXTRA_NAME"));
+        this.setTitle(mBundle.getString(WifiDevice.EXTRA_SSID));
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         if (fab != null) {
             fab.setOnClickListener(new View.OnClickListener() {
@@ -56,7 +61,14 @@ public class DetailActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         if (mWifiState.isEnabled()) {
-            mWifiDetailView.setText(R.string.wifi_enabled);
+            WifiDevice.Builder builder = new WifiDevice.Builder(mBundle);
+            WifiDevice obj = builder.build();
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
+                mWifiDetailView.setText(
+                        obj.getBssid() + ": " + obj.getTimestamp() + ": " + obj.getRssi() + ": "
+                                + obj.getFriendlyName());
+            }
+
         } else {
             mWifiDetailView.setText(R.string.wifi_disabled);
         }
@@ -68,7 +80,7 @@ public class DetailActivity extends AppCompatActivity {
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
      */
-    public Action getIndexApiAction() {
+    private Action getIndexApiAction() {
         Thing object = new Thing.Builder()
                 .setName("Detail Page") // TODO: Define a title for the content shown.
                 // TODO: Make sure this auto-generated URL is correct.

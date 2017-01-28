@@ -5,9 +5,12 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
+
+import java.util.List;
 
 
 public class WifiStateNotifier {
@@ -15,7 +18,8 @@ public class WifiStateNotifier {
     private static final String LOG_TAG = "WifiStateNotifier";
     private final WifiStateListener mStateListener;
     private final Context mContext;
-    private WifiManager mWifiManager;
+    private final WifiManager mWifiManager;
+    private List<ScanResult> mScanResults;
     private WifiReceiver mReceiver;
     private AlertDialog mDialog;
 
@@ -26,11 +30,16 @@ public class WifiStateNotifier {
         mWifiManager = (WifiManager) mContext.getSystemService(Context.WIFI_SERVICE);
     }
 
+    public WifiManager getWifiManager() {
+        return mWifiManager;
+    }
+
     void startWifiMonitor() {
         Log.d(LOG_TAG, "startWifiMonitor()");
         if (mReceiver == null) {
             IntentFilter filter = new IntentFilter();
             filter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
+            filter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
             mReceiver = new WifiReceiver();
             Log.d(LOG_TAG, "startWifiMonitor: registerReceiver");
             mContext.registerReceiver(mReceiver, filter);
@@ -45,6 +54,10 @@ public class WifiStateNotifier {
             mReceiver = null;
             Log.d(LOG_TAG, "stopWifiMonitor() unregistered");
         }
+    }
+
+    void startScan() {
+        mWifiManager.startScan();
     }
 
     public boolean isEnabled() {
@@ -89,6 +102,8 @@ public class WifiStateNotifier {
         void onDeclineEnable();
 
         void onAcceptEnable();
+
+        void onScanResultAvailable(List<ScanResult> list);
     }
 
     private class WifiReceiver extends BroadcastReceiver {
@@ -102,6 +117,17 @@ public class WifiStateNotifier {
                         mDialog.dismiss();
                     }
                     mStateListener.onEnabled();
+                }
+            } else if (WifiManager.SCAN_RESULTS_AVAILABLE_ACTION.equals(intent.getAction())) {
+                List<ScanResult> list = mWifiManager.getScanResults();
+                if (mScanResults == null) {
+                    mScanResults = list;
+                    mStateListener.onScanResultAvailable(mScanResults);
+                } else if (!list.isEmpty() && !mScanResults.equals(list)) {
+                    mScanResults = list;
+                    mStateListener.onScanResultAvailable(mScanResults);
+                } else {
+                    Log.d(LOG_TAG, "no update, same result");
                 }
             }
         }

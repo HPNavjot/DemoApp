@@ -7,7 +7,6 @@ import android.util.Log;
 import android.widget.Toast;
 
 public class MyService extends Service {
-    private final String TAG = "MyService";
     public MyService() {
     }
 
@@ -32,17 +31,20 @@ public class MyService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Toast.makeText(this, "Service has started", Toast.LENGTH_SHORT).show();
+        String TAG = "MyService";
         Log.d(TAG, "Service on Start Command");
 
         try{
             Log.d(TAG, "Service sleeping");
             for (int i=0; i<10;) {
                 i++;
-                Log.d(TAG, "i="+i);
+                Log.d(TAG, "i= " + i);
                 Thread.sleep(100);
             }
             Log.d(TAG, "Service woke up1");
-        }catch (InterruptedException e){}
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         this.onDestroy();
         return super.onStartCommand(intent, flags, startId);
     }

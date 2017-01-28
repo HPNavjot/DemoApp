@@ -4,7 +4,7 @@ package com.example.navjot.demoapp.Sample;
  * Created by navjot on 10/14/16.
  */
 
-public class Sample {
+class Sample {
     public static native void sayHi(String how, int count);
     static {
         System.loadLibrary("demo");
