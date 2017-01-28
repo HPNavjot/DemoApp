@@ -38,11 +38,13 @@ public class MyService extends Service {
             Log.d(TAG, "Service sleeping");
             for (int i=0; i<10;) {
                 i++;
-                Log.d(TAG, "i="+i);
+                Log.d(TAG, "i= " + i);
                 Thread.sleep(100);
             }
             Log.d(TAG, "Service woke up1");
-        }catch (InterruptedException e){ e.printStackTrace();}
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         this.onDestroy();
         return super.onStartCommand(intent, flags, startId);
     }

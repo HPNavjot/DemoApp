@@ -33,6 +33,7 @@ public class WifiStateNotifier {
     public WifiManager getWifiManager() {
         return mWifiManager;
     }
+
     void startWifiMonitor() {
         Log.d(LOG_TAG, "startWifiMonitor()");
         if (mReceiver == null) {

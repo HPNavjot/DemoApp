@@ -2,6 +2,7 @@ package com.example.navjot.demoapp.Sample;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -62,8 +63,11 @@ public class DetailActivity extends AppCompatActivity {
         if (mWifiState.isEnabled()) {
             WifiDevice.Builder builder = new WifiDevice.Builder(mBundle);
             WifiDevice obj = builder.build();
-
-            mWifiDetailView.setText(obj.getSsid()+": "+obj.getTimestamp());
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
+                mWifiDetailView.setText(
+                        obj.getBssid() + ": " + obj.getTimestamp() + ": " + obj.getRssi() + ": "
+                                + obj.getFriendlyName());
+            }
 
         } else {
             mWifiDetailView.setText(R.string.wifi_disabled);

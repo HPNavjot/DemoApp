@@ -24,28 +24,28 @@ public class WifiDevice {
         return mBundle;
     }
 
-    public long getRssi() {
-        return mBundle.getLong(EXTRA_RSSI);
+    public int getRssi() {
+        return mBundle.getInt(EXTRA_RSSI);
     }
 
-    public long getCapabilties() {
-        return mBundle.getLong(EXTRA_CAPS);
+    public String getCapabilties() {
+        return mBundle.getString(EXTRA_CAPS);
     }
 
-    public long getBssid() {
-        return mBundle.getLong(EXTRA_BSSID);
+    public String getBssid() {
+        return mBundle.getString(EXTRA_BSSID);
     }
 
     public long getTimestamp() {
         return mBundle.getLong(EXTRA_TIMESTAMP);
     }
 
-    public long getFriendlyName() {
-        return mBundle.getLong(EXTRA_FRIENDLY_NAME);
+    public String getFriendlyName() {
+        return mBundle.getString(EXTRA_FRIENDLY_NAME);
     }
 
-    public long getVenueName() {
-        return mBundle.getLong(EXTRA_VENUE_NAME);
+    public String getVenueName() {
+        return mBundle.getString(EXTRA_VENUE_NAME);
     }
 
     @Override

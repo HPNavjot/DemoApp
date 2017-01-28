@@ -59,7 +59,6 @@ public class DiscoveryService extends Service {
             mWifiManager = manager;
             mListener = listener;
             mListener.onScanStart();
-//            mTimer.schedule(mDiscoveryTask, FIRST_SCAN_OFFSET, RESCAN_AFTER);
             mHandler.postDelayed(mDiscoveryTask, RESCAN_AFTER);
             Log.d(TAG, "Binder: startDiscovery");
         }
